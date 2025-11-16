@@ -1,3 +1,7 @@
+import express from "express";
+
+const app = express();
+
 const config = {
   client: {
     id: "<client-id>",
@@ -23,10 +27,15 @@ const authorizationUri = client.authorizeURL({
   state: state,
 });
 
-// *********************
+app.get("/auth", (req, res) => {
+  res.redirect(authorizationUri);
+});
 
-// Redirect example using Express (see http://expressjs.com/api.html#res.redirect)
-res.redirect(authorizationUri);
+app.get("/auth/callback", (req, res) => {
+  const { code } = req.query;
+});
+
+// *********************
 
 const tokenParams = {
   code: "<code>",
