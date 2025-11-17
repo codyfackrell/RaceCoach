@@ -51,10 +51,16 @@ app.get("/auth", (req, res) => {
   res.redirect(authorizationUri);
 });
 
-app.get("/auth/callback", (req, res) => {
+app.get("/auth/callback", async (req, res) => {
   const { code, state } = req.query;
 
-  if (req.session.oauthState === state) {
-  } else {
+  if (state != req.session.oauthState) {
+    return res.status(403).send("Invalid state");
   }
+
+  const token = await client.getToken({
+    code,
+    redirect_uri: "http://localhost:5000/auth/callback",
+    code_verifier: req.session.pkceVerifier,
+  });
 });
