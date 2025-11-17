@@ -1,7 +1,9 @@
 import express from "express";
+import session from "express-session";
 
 const app = express();
 
+//OAuth2 configuration
 const config = {
   client: {
     id: "<client-id>",
@@ -19,34 +21,40 @@ const { AuthorizationCode } = require("simple-oauth2");
 
 const client = new AuthorizationCode(config);
 
-const state = crypto.randomUUID();
+// Session secret middleware
+app.use(
+  session({
+    secret: process.env.SESSION.SECRET,
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
-const authorizationUri = client.authorizeURL({
-  redirect_uri: "http://localhost:5000/auth/callback",
-  scope: "driving_data datapacks_subscriptions",
-  state: state,
-});
-
+// Authorization
 app.get("/auth", (req, res) => {
+  const codeVerifier = crypto.randomUUID();
+  const codeChallenge = base64url(sha256(codeVerifier));
+
+  req.session.pkceVerifier = codeVerifier;
+
+  const state = crypto.randomUUID();
+  req.session.oauthState = state;
+
+  const authorizationUri = client.authorizeURL({
+    redirect_uri: "http://localhost:5000/auth/callback",
+    scope: "driving_data datapacks_subscriptions",
+    state: state,
+    code_challenge: codeChallenge,
+    code_challenge_method: "S256",
+  });
+
   res.redirect(authorizationUri);
 });
 
 app.get("/auth/callback", (req, res) => {
-  const { code } = req.query;
+  const { code, state } = req.query;
+
+  if (req.session.oauthState === state) {
+  } else {
+  }
 });
-
-// *********************
-
-const tokenParams = {
-  code: "<code>",
-  redirect_uri: "http://localhost:5000/auth/callback",
-  scope: "driving_data datapacks_subscriptions", // Optional string or array including a subset of the original client scopes to request
-};
-
-try {
-  const accessToken = await client.getToken(tokenParams);
-} catch (error) {
-  console.log("Access Token Error", error.message);
-}
-
-run();
