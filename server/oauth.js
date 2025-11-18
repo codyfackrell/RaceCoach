@@ -58,9 +58,15 @@ app.get("/auth/callback", async (req, res) => {
     return res.status(403).send("Invalid state");
   }
 
-  const token = await client.getToken({
-    code,
-    redirect_uri: "http://localhost:5000/auth/callback",
-    code_verifier: req.session.pkceVerifier,
-  });
+  try {
+    const token = await client.getToken({
+      code,
+      redirect_uri: "http://localhost:5000/auth/callback",
+      code_verifier: req.session.pkceVerifier,
+    });
+
+    res.send("Authorization Succeed");
+  } catch (error) {
+    res.send("Authorization Failed");
+  }
 });
