@@ -65,8 +65,21 @@ app.get("/auth/callback", async (req, res) => {
       code_verifier: req.session.pkceVerifier,
     });
 
-    res.send("Authorization Succeed");
+    res.cookie("access_token", token.access_token, {
+      maxAge: 360000, // this is set to one hour
+      httpOnly: true,
+      secure: true,
+      sameSite: "Lax", // or 'Strict'
+    });
+    res.cookie("refresh_token", token.refresh_token, {
+      maxAge: 360000, // this is set to one hour
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax", // or 'Strict'
+    });
+
+    return res.redirect("/"); // Need to update with correct route
   } catch (error) {
-    res.send("Authorization Failed");
+    return res.redirect("/auth/error"); // Need to update with correct route
   }
 });
