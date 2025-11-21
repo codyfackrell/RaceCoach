@@ -1,13 +1,15 @@
 import express from "express";
 import session from "express-session";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 
 //OAuth2 configuration
 const config = {
   client: {
-    id: "<client-id>",
-    secret: "<client-secret>",
+    id: process.env.GARAGE61_API_KEY,
+    // secret: "<client-secret>", ** Not required for public (localhost) applications.
   },
   auth: {
     tokenHost: "https://garage61.net",
