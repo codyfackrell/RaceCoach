@@ -68,16 +68,16 @@ app.get("/auth/callback", async (req, res) => {
     });
 
     res.cookie("access_token", token.access_token, {
-      maxAge: 360000, // this is set to one hour
+      maxAge: 1000 * 60 * 60, // one hour
       httpOnly: true,
       secure: true,
-      sameSite: "Lax", // or 'Strict'
+      sameSite: "Lax",
     });
     res.cookie("refresh_token", token.refresh_token, {
-      maxAge: 360000, // this is set to one hour
+      maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "Lax", // or 'Strict'
+      sameSite: "Lax",
     });
 
     return res.redirect("/"); // Need to update with correct route
