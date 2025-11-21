@@ -8,7 +8,7 @@ const app = express();
 //OAuth2 configuration
 const config = {
   client: {
-    id: process.env.GARAGE61_API_KEY,
+    id: process.env.GARAGE61_CLIENT_ID,
     // secret: "<client-secret>", ** Not required for public (localhost) applications.
   },
   auth: {
