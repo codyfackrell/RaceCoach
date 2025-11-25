@@ -1,6 +1,7 @@
 import { useState } from "react";
 // import reactLogo from '../assets/'
 // import viteLogo from "./vite.svg";
+import { Link } from "react-router-dom";
 import "../css/App.css";
 
 function Home() {
@@ -17,7 +18,9 @@ function Home() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div> */}
-      <button onClick={() => setCount((count) => count + 1)}>Enter App</button>
+      <Link to="/begin" className="button">
+        Enter App
+      </Link>
       <p>Don't have an iRacing Account?</p>
       <a className="read-the-docs">Click here to see how the app works!</a>
     </>
