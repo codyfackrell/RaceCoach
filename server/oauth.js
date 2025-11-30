@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
+const router = express.Router();
 
 //OAuth2 configuration
 const config = {
@@ -33,7 +34,7 @@ app.use(
 );
 
 // Authorization
-app.get("/auth", (req, res) => {
+router.get("/auth", (req, res) => {
   const codeVerifier = crypto.randomUUID();
   const codeChallenge = base64url(sha256(codeVerifier));
 
@@ -53,7 +54,7 @@ app.get("/auth", (req, res) => {
   res.redirect(authorizationUri);
 });
 
-app.get("/auth/callback", async (req, res) => {
+router.get("/auth/callback", async (req, res) => {
   const { code, state } = req.query;
 
   if (state != req.session.oauthState) {
@@ -85,3 +86,5 @@ app.get("/auth/callback", async (req, res) => {
     return res.redirect("/auth/error"); // Need to update with correct route
   }
 });
+
+export default router;
