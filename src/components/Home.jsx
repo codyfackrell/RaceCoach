@@ -18,11 +18,17 @@ function Home() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div> */}
-      <Link to="/begin" className="button">
+      <button
+        onClick={() => {
+          window.open("http://localhost:5000/auth", "_blank");
+        }}
+      >
         Enter App
-      </Link>
-      <p>Don't have an iRacing Account?</p>
-      <a className="read-the-docs">Click here to see how the app works!</a>
+      </button>
+      <div className="no-account">
+        <p>Don't have an iRacing Account?</p>
+        <a className="see-app-work">Click here to see how the app works!</a>
+      </div>
     </>
   );
 }
