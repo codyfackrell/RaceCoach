@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import session from "express-session";
 import oauthRoutes from "./routes/oauth.routes.js";
 
 dotenv.config();

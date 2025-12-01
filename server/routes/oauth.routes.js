@@ -1,7 +1,6 @@
 import express from "express";
-import session from "express-session";
-import { oauthClient } from "../config/oauth.config";
-import { generateUUID, generateCodeChallenge } from "../utils/pkce";
+import { oauthClient } from "../config/oauth.config.js";
+import { generateUUID, generateCodeChallenge } from "../utils/pkce.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -11,7 +10,7 @@ const router = express.Router();
 // OAuth2 Routes
 router.get("/auth", (req, res) => {
   const codeVerifier = generateUUID();
-  const codeChallenge = generateCodeChallenge();
+  const codeChallenge = generateCodeChallenge(codeVerifier);
 
   req.session.pkceVerifier = codeVerifier;
 
@@ -20,7 +19,7 @@ router.get("/auth", (req, res) => {
 
   const authorizationUri = oauthClient.authorizeURL({
     redirect_uri: "http://localhost:5000/auth/callback",
-    scope: "driving_data datapacks_subscriptions",
+    scope: "driving_data",
     state: state,
     code_challenge: codeChallenge,
     code_challenge_method: "S256",
