@@ -1,9 +1,10 @@
 import express from "express";
 import session from "express-session";
 import dotenv from "dotenv";
+import base64url from "base64url";
+import crypto from "crypto";
 dotenv.config();
 
-const app = express();
 const router = express.Router();
 
 //OAuth2 configuration
@@ -20,14 +21,18 @@ const config = {
   },
 };
 
-const { AuthorizationCode } = require("simple-oauth2");
+const sha256 = (str) => {
+  return crypto.createHash("sha256").update(str).digest();
+};
+
+import { AuthorizationCode } from "simple-oauth2";
 
 const client = new AuthorizationCode(config);
 
 // Session secret middleware
-app.use(
+router.use(
   session({
-    secret: process.env.SESSION.SECRET,
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
   })

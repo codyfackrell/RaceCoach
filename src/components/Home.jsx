@@ -20,7 +20,7 @@ function Home() {
       </div> */}
       <button
         onClick={() => {
-          window.open("http://localhost:5000/auth", "_blank");
+          window.location.href = "http://localhost:5000/auth";
         }}
       >
         Enter App
