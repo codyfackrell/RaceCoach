@@ -1,54 +1,24 @@
 import express from "express";
 import session from "express-session";
+import { oauthClient } from "../config/oauth.config";
+import { generateUUID, generateCodeChallenge } from "../utils/pkce";
 import dotenv from "dotenv";
-import base64url from "base64url";
-import crypto from "crypto";
+
 dotenv.config();
 
 const router = express.Router();
 
-//OAuth2 configuration
-const config = {
-  client: {
-    id: process.env.GARAGE61_CLIENT_ID,
-    // secret: "<client-secret>", ** Not required for public (localhost) applications.
-  },
-  auth: {
-    tokenHost: "https://garage61.net",
-    tokenPath: "/api/oauth/token",
-    authorizeHost: "https://garage61.net",
-    authorizePath: "/app/account/oauth",
-  },
-};
-
-const sha256 = (str) => {
-  return crypto.createHash("sha256").update(str).digest();
-};
-
-import { AuthorizationCode } from "simple-oauth2";
-
-const client = new AuthorizationCode(config);
-
-// Session secret middleware
-router.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-  })
-);
-
-// Authorization
+// OAuth2 Routes
 router.get("/auth", (req, res) => {
-  const codeVerifier = crypto.randomUUID();
-  const codeChallenge = base64url(sha256(codeVerifier));
+  const codeVerifier = generateUUID();
+  const codeChallenge = generateCodeChallenge();
 
   req.session.pkceVerifier = codeVerifier;
 
-  const state = crypto.randomUUID();
+  const state = generateUUID();
   req.session.oauthState = state;
 
-  const authorizationUri = client.authorizeURL({
+  const authorizationUri = oauthClient.authorizeURL({
     redirect_uri: "http://localhost:5000/auth/callback",
     scope: "driving_data datapacks_subscriptions",
     state: state,
@@ -67,7 +37,7 @@ router.get("/auth/callback", async (req, res) => {
   }
 
   try {
-    const token = await client.getToken({
+    const token = await oauthClient.getToken({
       code,
       redirect_uri: "http://localhost:5000/auth/callback",
       code_verifier: req.session.pkceVerifier,

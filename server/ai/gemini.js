@@ -1,12 +1,5 @@
-// to get your first prompt:
-import dotenv from "dotenv";
-dotenv.config();
+import { ai } from "../config/gemini.config";
 
-import { GoogleGenAI } from "@google/genai";
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-
-// possible code to input
 async function main() {
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
