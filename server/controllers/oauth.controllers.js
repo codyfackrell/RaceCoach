@@ -1,20 +1,17 @@
-import express from "express";
 import { oauthClient } from "../config/oauth.config.js";
 import { generateUUID, generateCodeChallenge } from "../utils/pkce.js";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const router = express.Router();
-
 // OAuth2 Routes
-router.get("/auth", (req, res) => {
+const getAuthUri = async (req, res) => {
   const codeVerifier = generateUUID();
   const codeChallenge = generateCodeChallenge(codeVerifier);
 
   req.session.pkceVerifier = codeVerifier;
 
-  const state = generateUUID();
+  const state = await generateUUID();
   req.session.oauthState = state;
 
   const authorizationUri = oauthClient.authorizeURL({
@@ -26,9 +23,9 @@ router.get("/auth", (req, res) => {
   });
 
   res.redirect(authorizationUri);
-});
+};
 
-router.get("/auth/callback", async (req, res) => {
+const getAuthToken = async (req, res) => {
   const { code, state } = req.query;
 
   if (state != req.session.oauthState) {
@@ -59,6 +56,6 @@ router.get("/auth/callback", async (req, res) => {
   } catch (error) {
     return res.redirect("/auth/error"); // Need to update with correct route
   }
-});
+};
 
-export default router;
+export default { getAuthUri, getAuthToken };

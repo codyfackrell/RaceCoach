@@ -1,9 +1,12 @@
 import express from "express";
+import oauthControllers from "../controllers/oauth.controllers";
+
+const { getAuthUri, getAuthToken } = oauthControllers;
 
 const router = express.Router();
 
 // OAuth2 Routes
-router.get("/auth");
-router.get("/auth/callback");
+router.get("/auth", getAuthUri);
+router.get("/auth/callback", getAuthToken);
 
 export default router;
