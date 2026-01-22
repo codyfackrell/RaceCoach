@@ -13,6 +13,9 @@ const config = {
     authorizeHost: "https://garage61.net",
     authorizePath: "/app/account/oauth",
   },
+  options: {
+    authorizationMethod: "body",
+  },
 };
 
 export const oauthClient = new AuthorizationCode(config);

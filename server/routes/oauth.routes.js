@@ -1,5 +1,5 @@
 import express from "express";
-import oauthControllers from "../controllers/oauth.controllers";
+import oauthControllers from "../controllers/oauth.controllers.js";
 
 const { getAuthUri, getAuthToken } = oauthControllers;
 

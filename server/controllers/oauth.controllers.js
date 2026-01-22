@@ -1,17 +1,18 @@
 import { oauthClient } from "../config/oauth.config.js";
-import { generateUUID, generateCodeChallenge } from "../utils/pkce.js";
+import { generateCodeVerifier, generateCodeChallenge } from "../utils/pkce.js";
+import crypto from "crypto";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 // OAuth2 Routes
 const getAuthUri = async (req, res) => {
-  const codeVerifier = generateUUID();
+  const codeVerifier = generateCodeVerifier();
   const codeChallenge = generateCodeChallenge(codeVerifier);
 
   req.session.pkceVerifier = codeVerifier;
 
-  const state = await generateUUID();
+  const state = crypto.randomBytes(16).toString("hex");
   req.session.oauthState = state;
 
   const authorizationUri = oauthClient.authorizeURL({
@@ -33,11 +34,16 @@ const getAuthToken = async (req, res) => {
   }
 
   try {
-    const token = await oauthClient.getToken({
+    const tokenParams = {
       code,
       redirect_uri: "http://localhost:5000/auth/callback",
       code_verifier: req.session.pkceVerifier,
-    });
+      client_id: process.env.GARAGE61_CLIENT_ID,
+      grant_type: "authorization_code",
+    };
+    console.log("=== TOKEN REQUEST ===");
+    console.log(tokenParams);
+    const token = await oauthClient.getToken(tokenParams);
 
     res.cookie("access_token", token.access_token, {
       maxAge: 1000 * 60 * 60, // one hour
@@ -53,8 +59,11 @@ const getAuthToken = async (req, res) => {
     });
 
     return res.redirect("/"); // Need to update with correct route
-  } catch (error) {
-    return res.redirect("/auth/error"); // Need to update with correct route
+  } catch (err) {
+    console.error("TOKEN ERROR:", err);
+    if (err.data) {
+      console.error("Error data:", err.data);
+    }
   }
 };
 
