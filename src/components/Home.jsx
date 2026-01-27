@@ -27,7 +27,9 @@ function Home() {
       </button>
       <div className="no-account">
         <p>Don't have an iRacing Account?</p>
-        <a className="see-app-work">Click here to see how the app works!</a>
+        <a className="see-app-work">
+          Don't have an account? Click here to see how the app works!
+        </a>
       </div>
     </>
   );
